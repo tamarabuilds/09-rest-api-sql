@@ -19,6 +19,7 @@ Install my-project with npm
 ## Optimizations
 
  * Made sure ....
+ ----- CAN I MOVE THE USER ROUTES TO OWN FILE AND COURSES ROUTES TO OWN FILE?
 
 
 ## Lessons Learned
