@@ -1,7 +1,7 @@
 'use strict';
 const { Model, DataTypes } = require('sequelize');
 
-module.expoerts = (sequelize) => {
+module.exports = (sequelize) => {
     class User extends Model {}
     User.init({
         firstName: {
@@ -20,7 +20,7 @@ module.expoerts = (sequelize) => {
             type: DataTypes.STRING,
             
         },
-    }, {  });           // not sure if sequelize should be passed as second parameter here..????????
+    }, { sequelize });
     
     User.associate = (models) => {
         // Tells Sequelize that a user can be associated with one or more courses

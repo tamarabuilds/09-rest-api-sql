@@ -53,9 +53,9 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 // ---------- Courses Routes ------------
 
-// GET all courses
+// GET list of courses
 router.get('/courses', asyncHandler(async (req, res) => {
-    console.log('GET details of courses')
+    console.log('GET list of courses')
     
     res.status(200).json( courses );
 }));
@@ -73,6 +73,55 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 }));
 
 // POST to CREATE a new course
+router.post('/courses', asyncHandler(async (req, res) => {
+    console.log('POST to create a new course')
+    
+    const course = req.body;
+    
+    // add user the 'users' array for initial testing
+    courses.push(course);
+    
+    // Set the status to 201 Created and end the response
+    // Set the location header to "/"
+    res.status(201).setHeader('Location', '/').end()
+}));
+
+// PUT to UPDATE an individual course
+router.put('/courses/:id', asyncHandler(async (req, res) => {
+    console.log('PUT to update an individual course')
+    const courseId = req.params.id
+    const course = courses.find(record => record.id == courseId)
+    if (course) {
+        course.title = req.body.title;
+        course.description = req.body.description;
+        course.estimatedTime = req.body.estimatedTime;
+        course.materialsNeeded = req.body.materialsNeeded;
+        await save(courses);
+        // For a put request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
+        // Must end the request with .end
+        res.status(204).end();
+    } else {
+        res.status(400).json({message: "Quote not found"});
+    }
+}));
+
+
+// DELETE an individual course
+router.delete('/courses/:id', asyncHandler(async (req, res) => {
+    // throw new Error("somthing terrible  hrouterend and we have a server error now")
+    console.log('DELETE an individual course')
+    const courseId = req.params.id
+    const course = courses.find(record => record.id == courseId)
+    if (course) {
+        courses = courses.filter(record => record.id != courseId)
+        await save(courses);
+        // For a put request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
+        // Must end the request with .end
+        res.status(204).end();
+    } else {
+        res.status(400).json({message: "Quote not found"});
+    }
+}));
 
 
 
