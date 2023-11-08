@@ -1,10 +1,12 @@
 const express = require('express');
 // new router allow us to route everything to /api without having to specify it on every sindle route
 const router = express.Router();
+const User = require('./models').User;
+const Course = require('./models').Course;
 
-// Array to keep track of user and course records as they are created
-const users = [];
-const courses = [];
+// // Array to keep track of user and course records as they are created
+// const users = [];
+// const courses = [];
 
 
 /**
@@ -29,9 +31,12 @@ function asyncHandler(cb){
 // router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 router.get('/users', asyncHandler(async (req, res) => {
     console.log('GET details of authenticated users')
+    const users = await  
     
-    
-    res.status(200).json( users );
+    // res.status(200).json( users );
+    res.status(200).json({
+
+    });
 }));
     
     
