@@ -66,7 +66,13 @@ router.post('/users', asyncHandler(async (req, res) => {
 // GET list of all courses
 router.get('/courses', asyncHandler(async (req, res) => {
     const courses = await Course.findAll({
-        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId']
+        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName', 'emailAddress']
+            }
+        ]
     });
 
     res.status(200).json(courses);
@@ -76,7 +82,13 @@ router.get('/courses', asyncHandler(async (req, res) => {
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     const courseId = req.params.id
     const courses = await Course.findAll({
-        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId']
+        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName', 'emailAddress']
+            }
+        ]
     });
     const course = courses.find(item => item.id == courseId)
     if (course) {
@@ -90,10 +102,14 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
     try {
         await Course.create(req.body);
+        const courses = await Course.findAll({
+            attributes: ['id', 'title'],
+        });
+        const latestCourseId = courses.slice(-1)[0].dataValues.id 
+        console.log(latestCourseId)
         // Set the status to 201 Created and end the response
-        // Set the location header to "/" for user interaction once they've filled in the front end forms
-        // this will redirect them to the root of the app
-        res.status(201).setHeader('Location', '/').end()
+        // Set the location header to "/courses/:id" once they've added the course
+        res.status(201).setHeader('Location', `/courses/${latestCourseId}`).end()
     } catch (error) {
         console.log('Error: ', error);
 
