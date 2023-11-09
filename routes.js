@@ -4,10 +4,7 @@ const router = express.Router();
 const User = require('./models').User;
 const Course = require('./models').Course;
 const fs = require('fs');
-
-// // Array to keep track of user and course records as they are created
-// const users = [];
-// const courses = [];
+const { authenticateUser } = require('./middleware/auth-user')
 
 
 /**
@@ -30,13 +27,13 @@ function asyncHandler(cb){
 // ---------- Users Routes ------------
 
 
-// GET list of all currently authenticated users
-// router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
-router.get('/users', asyncHandler(async (req, res) => {
-    console.log('GET details of authenticated users')
-    const users = await User.findAll();
-
-    res.status(200).json(users);
+// GET data for currently authenticated user
+// Passing authenticateUser middleware before the route handler function
+// instructs Express to pass GET request /api/users/ to first go to our 
+// custom route handler function then to the inline route handler function
+router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
+    const user = req.currentUser;
+    res.status(200).json(user);
 }));
     
     
@@ -66,7 +63,6 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 // GET list of all courses
 router.get('/courses', asyncHandler(async (req, res) => {
-    console.log('GET list of courses')
     const courses = await Course.findAll();
 
     res.status(200).json(courses);
@@ -74,7 +70,6 @@ router.get('/courses', asyncHandler(async (req, res) => {
 
 // GET individual course
 router.get('/courses/:id', asyncHandler(async (req, res) => {
-    console.log('GET individual course')
     const courseId = req.params.id
     const courses = await Course.findAll();
     const course = courses.find(item => item.id == courseId)
@@ -86,7 +81,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 }));
 
 // POST to CREATE a new course
-router.post('/courses', asyncHandler(async (req, res) => {
+router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
     try {
         await Course.create(req.body);
         // Set the status to 201 Created and end the response
@@ -105,24 +100,31 @@ router.post('/courses', asyncHandler(async (req, res) => {
 }));
 
 // PUT to UPDATE an individual course
-router.put('/courses/:id', asyncHandler(async (req, res) => {
-    let course;
+router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
     try {
-        console.log('PUT to update an individual course')
-
-        course = await Course.findByPk(req.params.id)
-
+        let course = await Course.findByPk(req.params.id)
         if (course) {
-            // update the course object from the request body
-            await course.update(req.body);
+            // Storing data of the authenticated user coming from authenticateUser middleware
+            const user = req.currentUser; 
+            // Confirming authenticated user is the owner of the course
+            const courseOwner = course.dataValues.userId;
+            const authenticatedUserId = user.dataValues.id;
+            
+            if (courseOwner === authenticatedUserId){
+                // update the course object from the request body
+                await course.update(req.body);
+    
+                // For a put request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
+                // Must end the request with .end
+                res.status(204).end();
+    
+            } else {
+                res.status(403).json({message: "User is not owner of the course"});
+            }
 
-            // For a put request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
-            // Must end the request with .end
-            res.status(204).end();
         } else {
-            res.status(400).json({message: "Quote not found"});
-        }
-        
+            res.status(400).json({message: "Course not found"});
+        }        
     } catch (error) {
         console.log('Error: ', error);
 
@@ -137,18 +139,29 @@ router.put('/courses/:id', asyncHandler(async (req, res) => {
 
 
 // DELETE an individual course
-router.delete('/courses/:id', asyncHandler(async (req, res) => {
-    console.log('DELETE an individual course')
-    let course;
+router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
     try {
-        course = await Course.findByPk(req.params.id)
+        let course = await Course.findByPk(req.params.id)
         if (course) {
-            await course.destroy();
-            // For a put request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
-            // Must end the request with .end
-            res.status(204).end();
+            // Storing data of the authenticated user coming from authenticateUser middleware
+            const user = req.currentUser; 
+            // Confirming authenticated user is the owner of the course
+            const courseOwner = course.dataValues.userId;
+            const authenticatedUserId = user.dataValues.id;
+            
+            if (courseOwner === authenticatedUserId){
+                // delete the course object
+                await course.destroy();
+                // For a delete request, it's convention to send status 204 (meaning no content == everything went OK but there's nothing to send back)
+                // Must end the request with .end
+                res.status(204).end();
+                    
+            } else {
+                res.status(403).json({message: "User is not owner of the course"});
+            }
+
         } else {
-            res.status(400).json({message: "Quote not found"});
+            res.status(400).json({message: "Course not found"});
         }
     } catch (error) {
         console.log('Error: ', error);
