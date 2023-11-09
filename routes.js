@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('./models').User;
 const Course = require('./models').Course;
-const fs = require('fs');
 const { authenticateUser } = require('./middleware/auth-user')
 
 
@@ -32,19 +31,10 @@ function asyncHandler(cb){
     // instructs Express to pass GET request /api/users/ to first go to our 
     // custom route handler function then to the inline route handler function
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
-    const user = req.currentUser
-
+    const {id, firstName, lastName, emailAddress} = req.currentUser
     
-    // Filter object properties by allowed keys. learned from: https://stackoverflow.com/questions/38750705/filter-object-properties-by-key-in-es6 
-    const allowed = ['id', 'firstName', 'lastName', 'emailAddress'];
-    const filtered = Object.keys(user.dataValues)
-        .filter(key => allowed.includes(key))
-        .reduce((obj, key) => {
-            obj[key] = user.dataValues[key];
-            return obj;
-        }, {});
-
-    res.status(200).json(filtered);
+    // fiter out password, createdAt, updatedAt from the response
+    res.status(200).json({id, firstName, lastName, emailAddress});
 }));
     
     
@@ -53,8 +43,9 @@ router.post('/users', asyncHandler(async (req, res) => {
     try {
         await User.create(req.body);
         // Set the status to 201 Created and end the response
-        // Set the location header to "/"
-        res.status(201).setHeader('Location', '/').end()            /// WHAT DOES THIS MEAN??
+        // Set the location header to "/" for user interaction once they've filled in the front end forms
+        // this will redirect them to the root of the app
+        res.status(201).setHeader('Location', '/').end()
     } catch (error) {
         console.log('Error: ', error);
 
@@ -100,7 +91,8 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
     try {
         await Course.create(req.body);
         // Set the status to 201 Created and end the response
-        // Set the location header to "/"
+        // Set the location header to "/" for user interaction once they've filled in the front end forms
+        // this will redirect them to the root of the app
         res.status(201).setHeader('Location', '/').end()
     } catch (error) {
         console.log('Error: ', error);

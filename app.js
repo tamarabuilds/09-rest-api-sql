@@ -26,6 +26,7 @@ app.get('/', (req, res) => {
 
 
 app.use(express.json());
+
 /**
  * Middleware to be used if the request starts with a certin path
  * When it starts with '/api', then use the routes in the routes.js file

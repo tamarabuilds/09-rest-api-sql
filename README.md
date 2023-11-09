@@ -18,8 +18,7 @@ Install my-project with npm
 
 ## Optimizations
 
- * Made sure ....
- ----- CAN I MOVE THE USER ROUTES TO OWN FILE AND COURSES ROUTES TO OWN FILE?
+ * Thoughrough comments on new concepts, such as authenticate User middleware.
 
 
 ## Lessons Learned
@@ -29,7 +28,7 @@ Install my-project with npm
  * Hashing passwords for security.
  * User authenticaion middleware.
  * Testing APIs with Postman
- * Ensuring emails are unique.
+ * Ensuring emails are unique and a valid format.
  * Filtering out properties from a response.
 
 
@@ -37,7 +36,7 @@ Install my-project with npm
 
 * Email address is valid and unique.
 * Updated /api/users, /api/courses, and /api/course routes to filter unnecessary fields.
-* Ensure only currently authenticated user is the owner of requested courses.
+* Ensure only currently authenticated user is the owner of courses to update or delete.
 * Throw 400 HTTP status code for SequelizeUniqueConstraintError errors.
 
 
