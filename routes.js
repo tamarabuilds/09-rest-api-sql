@@ -28,12 +28,23 @@ function asyncHandler(cb){
 
 
 // GET data for currently authenticated user
-// Passing authenticateUser middleware before the route handler function
-// instructs Express to pass GET request /api/users/ to first go to our 
-// custom route handler function then to the inline route handler function
+    // Passing authenticateUser middleware before the route handler function
+    // instructs Express to pass GET request /api/users/ to first go to our 
+    // custom route handler function then to the inline route handler function
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
-    const user = req.currentUser;
-    res.status(200).json(user);
+    const user = req.currentUser
+
+    const allowed = ['id', 'firstName', 'lastName', 'emailAddress'];
+
+    // Filter object properties by key learned from: https://stackoverflow.com/questions/38750705/filter-object-properties-by-key-in-es6 
+    const filtered = Object.keys(user.dataValues)
+        .filter(key => allowed.includes(key))
+        .reduce((obj, key) => {
+            obj[key] = user.dataValues[key];
+            return obj;
+        }, {});
+
+    res.status(200).json(filtered);
 }));
     
     
