@@ -46,7 +46,8 @@ module.exports = (sequelize) => {
         Course.belongsTo(models.User, {
             foreignKey: {
                 fieldName: 'userId',
-                // allowNull: false,
+                // // If we want userId to be required, uncomment this out
+                // allowNull: false,        
                 // validate: {
                 //     notNull: {
                 //         msg: 'A userId is required'
