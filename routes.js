@@ -34,9 +34,9 @@ function asyncHandler(cb){
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser
 
+    
+    // Filter object properties by allowed keys. learned from: https://stackoverflow.com/questions/38750705/filter-object-properties-by-key-in-es6 
     const allowed = ['id', 'firstName', 'lastName', 'emailAddress'];
-
-    // Filter object properties by key learned from: https://stackoverflow.com/questions/38750705/filter-object-properties-by-key-in-es6 
     const filtered = Object.keys(user.dataValues)
         .filter(key => allowed.includes(key))
         .reduce((obj, key) => {
@@ -74,7 +74,9 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 // GET list of all courses
 router.get('/courses', asyncHandler(async (req, res) => {
-    const courses = await Course.findAll();
+    const courses = await Course.findAll({
+        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId']
+    });
 
     res.status(200).json(courses);
 }));
@@ -82,7 +84,9 @@ router.get('/courses', asyncHandler(async (req, res) => {
 // GET individual course
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     const courseId = req.params.id
-    const courses = await Course.findAll();
+    const courses = await Course.findAll({
+        attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId']
+    });
     const course = courses.find(item => item.id == courseId)
     if (course) {
         res.status(200).json(course)
