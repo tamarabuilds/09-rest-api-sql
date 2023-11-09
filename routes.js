@@ -101,15 +101,11 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 // POST to CREATE a new course
 router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
     try {
-        await Course.create(req.body);
-        const courses = await Course.findAll({
-            attributes: ['id', 'title'],
-        });
-        const latestCourseId = courses.slice(-1)[0].dataValues.id 
-        console.log(latestCourseId)
+        const newCourse = await Course.create(req.body);
+
         // Set the status to 201 Created and end the response
         // Set the location header to "/courses/:id" once they've added the course
-        res.status(201).setHeader('Location', `/courses/${latestCourseId}`).end()
+        res.status(201).setHeader('Location', `/courses/${newCourse.id}`).end()
     } catch (error) {
         console.log('Error: ', error);
 
