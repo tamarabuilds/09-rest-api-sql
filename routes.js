@@ -26,16 +26,6 @@ function asyncHandler(cb){
 };
 
 
-/**
- * Handler function to save data
- * 
- */
-function save(data){
-    return new Promise((resolve, reject) => {
-        fs.writeFile()
-    })
-}
-
 
 // ---------- Users Routes ------------
 
@@ -135,6 +125,13 @@ router.put('/courses/:id', asyncHandler(async (req, res) => {
         
     } catch (error) {
         console.log('Error: ', error);
+
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            const errors = error.errors.map(err => err.message);
+            res.status(400).json({errors});
+        } else {
+            throw error;
+        }
     }
 }));
 
