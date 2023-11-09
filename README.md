@@ -3,7 +3,8 @@ Learn more about the developer on <a href="https://www.linkedin.com/in/tamarabui
 
 Unit 09 project for the Full Stack JavaScript Techdegree. This is a REST API to let users create, list, update, and delete items from a fictional school database.
 
-
+![Screenshot 2023-11-09 at 3 26 48 PM](https://github.com/tamarabuilds/rest-api-sql/assets/98510821/f07a57af-e3c4-4012-a9e9-6b653bb9c8fe)
+(Image of Postman, used to confirm the API functionality)
 
 ## How It's Made
 
