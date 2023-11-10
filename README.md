@@ -8,7 +8,7 @@ Unit 09 project for the Full Stack JavaScript Techdegree. This is a REST API to 
 
 ## How It's Made
 
-Tech used: HTML, CSS, JavaScript, Node.js, Express, SQLite, the SQL ORM Sequelize, and the REST Client package for testing
+Tech used: HTML, CSS, JavaScript, Node.js, Express, SQLite, and the SQL ORM Sequelize.
 
 Install my-project with npm
 
